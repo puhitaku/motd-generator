@@ -99,10 +99,17 @@ class Motd(object):
         return locals()
     colored_text = property(**colored_text())
 
+    def color_list():
+        """The list of colors."""
+        def fget(self):
+            return self.p.color_list
+        return locals()
+    color_list = property(**color_list())
 
 class ImageMotd(Motd):
-    def __init__(self, palette, file_name=""):
+    def __init__(self, palette, file_name="", text="  "):
         Motd.__init__(self, palette)
+        self._t = text
         if file_name != "":
             self.open(file_name)
 
@@ -118,72 +125,59 @@ class ImageMotd(Motd):
                 for c in self.p.color_class:
                     if p == c.rgb:
                         if p == p_bef:
-                            self.s.append(ColText("XX", ""))
+                            self.s.append(ColText(self._t, ""))
                         else:
                             p_bef = p
-                            self.s.append(ColText("XX", c.code))
+                            self.s.append(ColText(self._t, c.code))
 
             self.new_line()
 
-
-"""
-class HTMLMotdParser(object, Motd, HTMLParser):
-    def __init__(self, palette, html_code=""):
-        Motd.__init__(self, palette)
-        self._html_code = html_code
-
-    def handle_starttag(self, tag, attrs):
-        if tag == "span":
-            attrs.style
-
-    def html_code():
+    def text():
+        """Fill character(s)"""
         def fget(self):
-            return self._html_code
+            return self._t
+        def fset(self, value):
+            self._t = value
         return locals()
-    html_code = property(**html_code())
-"""
-
+    text = property(**text())
 
 def main():
-    m = Motd(
-        Palette(
-            [
-                Color("BLACK",   "\033[1;30m", (0,0,0)),
-                Color("RED",     "\033[1;31m", (255,0,0)),
-                Color("GREEN",   "\033[1;32m", (0,255,0)),
-                Color("YELLOW",  "\033[1;33m", (255,255,0)),
-                Color("BLUE",    "\033[1;34m", (0,0,255)),
-                Color("MAGENTA", "\033[1;35m", (255,0,255)),
-                Color("CYAN",    "\033[1;36m", (0,255,255)),
-                Color("WHITE",   "\033[1;37m", (255,255,255)),
-                Color("RESET",   "\033[1;37m", (-1,-1,-1))
-            ]
-        )
+    p = Palette(
+        [
+            Color("BLACK",   "\033[100m", (0,0,0)),
+            Color("RED",     "\033[101m", (255,0,0)),
+            Color("GREEN",   "\033[102m", (0,255,0)),
+            Color("YELLOW",  "\033[103m", (255,255,0)),
+            Color("BLUE",    "\033[104m", (0,0,255)),
+            Color("MAGENTA", "\033[105m", (255,0,255)),
+            Color("CYAN",    "\033[106m", (0,255,255)),
+            Color("WHITE",   "\033[107m", (255,255,255)),
+
+            Color("D_RED",     "\033[0;41m", (127,0,0)),
+            Color("D_GREEN",   "\033[0;42m", (0,127,0)),
+            Color("D_YELLOW",  "\033[0;43m", (127,127,0)),
+            Color("D_BLUE",    "\033[0;44m", (0,0,127)),
+            Color("D_MAGENTA", "\033[0;45m", (127,0,127)),
+            Color("D_CYAN",    "\033[0;46m", (0,127,127)),
+
+            Color("GRAY",      "\033[0;47m", (127,127,127)),
+
+            #Color("RESET",   "\033[1;37m", (-1,-1,-1))
+        ]
     )
 
+    m = Motd(p)
+    im = ImageMotd(p, file_name = "wooser_s.bmp", text="  ")
     
-    im = ImageMotd(
-        Palette(
-            [
-                Color("BLACK",   "\033[1;30m", (0,0,0)),
-                Color("RED",     "\033[1;31m", (255,0,0)),
-                Color("GREEN",   "\033[1;32m", (0,255,0)),
-                Color("YELLOW",  "\033[1;33m", (255,255,0)),
-                Color("BLUE",    "\033[1;34m", (0,0,255)),
-                Color("MAGENTA", "\033[1;35m", (255,0,255)),
-                Color("CYAN",    "\033[1;36m", (0,255,255)),
-                Color("WHITE",   "\033[1;37m", (255,255,255)),
-                Color("RESET",   "\033[1;37m", (-1,-1,-1))
-            ]
-        ),
-        file_name = "wooser_s.bmp"
-    )
+    s = "Quick brown fox jumps over the lazy dog."
+    l = im.color_list
+    for i in range(len(l)):
+      m.append_line(l[i % len(l)] + " = " + s, l[i % len(l)])
     
+    #m.append("Hello", "WHITE")
+    #m.append("red", "RED")
+    #m.append_line("world!", "WHITE")
     
-    m.append("Hello", "WHITE")
-    m.append("red", "RED")
-    m.append_line("world!", "WHITE")
-
     print(m.colored_text)
 
     imstr = im.colored_text
