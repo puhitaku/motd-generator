@@ -117,11 +117,11 @@ class ImageMotd(Motd):
     def open(self, file_name):
         self.img = Image.open(file_name, "r")
         px = self.img.load()
-        p_bef = (-1, -1, -1)
 
         for y in range(self.img.size[1]):
             for x in range(self.img.size[0]):
                 p = px[x, y]
+                p_bef = (-1, -1, -1)
 
                 for c in self.p.color_class:
                     if p == c.rgb:
@@ -130,7 +130,6 @@ class ImageMotd(Motd):
                         else:
                             p_bef = p
                             self.s.append(ColText(self._t, c.code))
-
             self.new_line()
 
     def text():
