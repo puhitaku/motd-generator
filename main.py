@@ -84,10 +84,11 @@ class Motd(object):
         self.s.append(ColText(string + end, self.p.get_code(color_name)))
 
     def append_line(self, string, color_name):
-        self.append(string, color_name, end = "\n")
+        self.append(string, color_name)
+        self.new_line()
 
     def new_line(self):
-        self.s.append(ColText("\n", "\033[97m"))
+        self.s.append(ColText("\n", "\033[39;49m"))
 
     def colored_text():
         """Get colored text."""
